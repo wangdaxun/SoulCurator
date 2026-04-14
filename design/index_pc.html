@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="filename" content="soul-discovery-gate.html">
+    <title>文艺灵魂探索 - 开启你的旅程</title>
+    <!-- Google Fonts: Inter & Ma Shan Zheng for a poetic feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        poetic: ['Ma Shan Zheng', 'cursive'],
+                    },
+                    colors: {
+                        space: {
+                            900: '#050508',
+                            800: '#0a0a14',
+                            700: '#161625',
+                        },
+                        soul: {
+                            purple: '#a855f7',
+                            blue: '#3b82f6',
+                            gold: '#fbbf24',
+                            green: '#10b981',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050508;
+            overflow: hidden;
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .star-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .gate-selected {
+            border-width: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.05);
+        }
+
+        .gate-dimmed {
+            opacity: 0.3;
+            filter: grayscale(0.5);
+        }
+
+        .glow-purple { box-shadow: 0 0 30px rgba(168, 85, 247, 0.2); }
+        .glow-blue { box-shadow: 0 0 30px rgba(59, 130, 246, 0.2); }
+        .glow-gold { box-shadow: 0 0 30px rgba(251, 191, 36, 0.2); }
+        .glow-green { box-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
+
+        .btn-constellation {
+            transition: all 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-active {
+            background: white;
+            color: black;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-inactive {
+            color: rgba(255, 255, 255, 0.3);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between py-16 px-8 text-white">
+
+    <!-- Background Starfield -->
+    <canvas id="starfield" class="star-canvas"></canvas>
+
+    <!-- Header Section -->
+    <div class="z-10 text-center space-y-4">
+        <div class="w-1 h-12 bg-gradient-to-b from-transparent to-white mx-auto mb-6 opacity-30"></div>
+        <h1 class="text-2xl font-light tracking-widest leading-relaxed">
+            你的文艺灵魂<br/>
+            <span class="text-3xl font-poetic mt-2 block">从何处开始？</span>
+        </h1>
+        <p class="text-xs text-white/40 tracking-[0.2em] uppercase mt-4">Where your journey begins</p>
+    </div>
+
+    <!-- Soul Gates Grid -->
+    <div class="z-10 grid grid-cols-2 gap-4 w-full max-w-xs">
+        <!-- Movie Gate -->
+        <div onclick="selectGate(this, 'purple')" class="gate glass-card group relative h-40 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+            <div class="absolute inset-0 bg-soul-purple/0 group-hover:bg-soul-purple/5 transition-colors"></div>
+            <i data-lucide="clapperboard" class="w-8 h-8 mb-3 text-soul-purple opacity-70 group-hover:scale-110 transition-transform"></i>
+            <span class="text-sm tracking-widest font-light">电影之门</span>
+            <div class="absolute -bottom-2 w-full h-1 bg-soul-purple blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+
+        <!-- Literature Gate -->
+        <div onclick="selectGate(this, 'blue')" class="gate glass-card group relative h-40 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+            <div class="absolute inset-0 bg-soul-blue/0 group-hover:bg-soul-blue/5 transition-colors"></div>
+            <i data-lucide="book-open" class="w-8 h-8 mb-3 text-soul-blue opacity-70 group-hover:scale-110 transition-transform"></i>
+            <span class="text-sm tracking-widest font-light">文学之门</span>
+            <div class="absolute -bottom-2 w-full h-1 bg-soul-blue blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+
+        <!-- Music Gate -->
+        <div onclick="selectGate(this, 'gold')" class="gate glass-card group relative h-40 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+            <div class="absolute inset-0 bg-soul-gold/0 group-hover:bg-soul-gold/5 transition-colors"></div>
+            <i data-lucide="music" class="w-8 h-8 mb-3 text-soul-gold opacity-70 group-hover:scale-110 transition-transform"></i>
+            <span class="text-sm tracking-widest font-light">音乐之门</span>
+            <div class="absolute -bottom-2 w-full h-1 bg-soul-gold blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+
+        <!-- Game Gate -->
+        <div onclick="selectGate(this, 'green')" class="gate glass-card group relative h-40 rounded-2xl flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+            <div class="absolute inset-0 bg-soul-green/0 group-hover:bg-soul-green/5 transition-colors"></div>
+            <i data-lucide="gamepad-2" class="w-8 h-8 mb-3 text-soul-green opacity-70 group-hover:scale-110 transition-transform"></i>
+            <span class="text-sm tracking-widest font-light">游戏之门</span>
+            <div class="absolute -bottom-2 w-full h-1 bg-soul-green blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Action -->
+    <div class="z-10 w-full px-4 text-center">
+        <button id="nextBtn" disabled class="btn-constellation btn-inactive w-full py-4 rounded-full text-sm tracking-[0.3em] font-medium transition-all duration-700">
+            激活探寻仪式
+        </button>
+        <p class="mt-6 text-[10px] text-white/20 tracking-tighter">深夜 02:14 · 遇见未知的自己</p>
+    </div>
+
+    <script>
+        // Particle System
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationFrameId;
+
+        function initParticles() {
+            canvas.width = 375;
+            canvas.height = 812;
+            particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5,
+                    speed: Math.random() * 0.2 + 0.1,
+                    opacity: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            particles.forEach(p => {
+                ctx.globalAlpha = p.opacity;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                p.y -= p.speed;
+                if (p.y < 0) p.y = canvas.height;
+            });
+            animationFrameId = requestAnimationFrame(drawParticles);
+        }
+
+        // Selection Logic
+        function selectGate(el, color) {
+            const gates = document.querySelectorAll('.gate');
+            const nextBtn = document.getElementById('nextBtn');
+
+            gates.forEach(g => {
+                g.classList.remove('gate-selected', 'glow-purple', 'glow-blue', 'glow-gold', 'glow-green');
+                g.classList.add('gate-dimmed');
+            });
+
+            el.classList.remove('gate-dimmed');
+            el.classList.add('gate-selected', `glow-${color}`);
+            
+            // Activate Button
+            nextBtn.disabled = false;
+            nextBtn.classList.remove('btn-inactive');
+            nextBtn.classList.add('btn-active');
+            nextBtn.innerText = "进入探索之旅";
+        }
+
+        // Lifecycle
+        window.addEventListener('load', () => {
+            initParticles();
+            drawParticles();
+            lucide.createIcons();
+        });
+
+        // Cleanup (Internal requirement)
+        window.addEventListener('unload', () => {
+            cancelAnimationFrame(animationFrameId);
+        });
+    </script>
+</body>
+</html>

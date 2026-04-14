@@ -1,0 +1,295 @@
+<meta name="filename" content="soul-portrait-design.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵魂画像 - 深空科技感设计</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans SC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-blue': '#020617',
+                        'tech-purple': '#8b5cf6',
+                        'particle-gold': '#fbbf24',
+                        'glass-white': 'rgba(255, 255, 255, 0.08)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020617;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .tag-glow:hover {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+            border-color: rgba(139, 92, 246, 0.6);
+            transform: translateY(-2px);
+        }
+        .quote-gradient {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 1440px;
+            margin: 0 auto;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-200 antialiased">
+    <!-- Background Canvas for Particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="content-wrapper min-h-screen flex flex-col items-center justify-center py-20">
+        <!-- Main Soul Portrait Card -->
+        <main class="glass-card rounded-[40px] w-full max-w-6xl p-12 relative overflow-hidden">
+            <!-- Decorative Light Effects -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-tech-purple/20 rounded-full blur-[120px]"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-particle-gold/10 rounded-full blur-[120px]"></div>
+
+            <!-- Top Header Section -->
+            <div class="flex flex-col items-center mb-16 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 animate-pulse-slow">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-particle-gold"></i>
+                    <span class="text-xs uppercase tracking-widest text-particle-gold font-semibold">Soul Analysis Report</span>
+                </div>
+                <h1 class="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 mb-4">
+                    深夜思考者
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl font-light">
+                    你的灵魂在静谧的星空下共鸣，于万籁俱寂之时寻找宇宙的逻辑与诗意。
+                </p>
+            </div>
+
+            <!-- Middle Section: Traits & Quotes -->
+            <div class="grid grid-cols-12 gap-8 mb-16">
+                <!-- Left: Tags/Traits -->
+                <div class="col-span-7 space-y-8">
+                    <h3 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-4 flex items-center gap-2">
+                        <span class="w-8 h-[1px] bg-slate-700"></span> 核心特质
+                    </h3>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="tag-glow px-6 py-3 rounded-2xl glass-card transition-all duration-300 cursor-default flex items-center gap-3">
+                            <i data-lucide="moon" class="w-5 h-5 text-tech-purple"></i>
+                            <span class="font-medium">深度内省</span>
+                        </div>
+                        <div class="tag-glow px-6 py-3 rounded-2xl glass-card transition-all duration-300 cursor-default flex items-center gap-3">
+                            <i data-lucide="cpu" class="w-5 h-5 text-tech-purple"></i>
+                            <span class="font-medium">理性极客</span>
+                        </div>
+                        <div class="tag-glow px-6 py-3 rounded-2xl glass-card transition-all duration-300 cursor-default flex items-center gap-3">
+                            <i data-lucide="compass" class="w-5 h-5 text-tech-purple"></i>
+                            <span class="font-medium">孤独探索者</span>
+                        </div>
+                        <div class="tag-glow px-6 py-3 rounded-2xl glass-card transition-all duration-300 cursor-default flex items-center gap-3">
+                            <i data-lucide="palette" class="w-5 h-5 text-tech-purple"></i>
+                            <span class="font-medium">隐秘艺术家</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Quote Card -->
+                <div class="col-span-5">
+                    <div class="quote-gradient rounded-3xl p-8 border border-white/5 relative overflow-hidden group">
+                        <i data-lucide="quote" class="absolute -top-4 -right-4 w-24 h-24 text-white/5 -rotate-12 transition-transform group-hover:rotate-0 duration-700"></i>
+                        <p class="text-xl italic leading-relaxed text-slate-200 mb-6 font-light">
+                            “不要温顺地走进那个良夜，激情不能被消沉的暮色所屈服。”
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div class="h-[1px] w-12 bg-particle-gold/50"></div>
+                            <span class="text-sm text-particle-gold uppercase tracking-widest font-bold">狄兰·托马斯</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom: Today's Recommendation -->
+            <div class="border-t border-white/5 pt-12">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-semibold flex items-center gap-3">
+                        <i data-lucide="zap" class="text-particle-gold"></i>
+                        今日灵魂共鸣
+                    </h3>
+                    <button class="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1 group">
+                        换一批 <i data-lucide="refresh-cw" class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Rec 1 -->
+                    <div class="group glass-card p-6 rounded-2xl transition-all hover:bg-white/5 hover:-translate-y-1 cursor-pointer">
+                        <div class="aspect-video bg-indigo-900/30 rounded-xl mb-4 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=600" alt="Space" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-space-blue to-transparent"></div>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-tighter text-tech-purple font-bold">电影推荐</span>
+                        <h4 class="text-lg font-bold mb-2">《星际穿越》</h4>
+                        <p class="text-xs text-slate-400 line-clamp-2">唯有爱与时间能超越维度。你的灵魂与这部史诗在时空奇点交汇。</p>
+                    </div>
+                    <!-- Rec 2 -->
+                    <div class="group glass-card p-6 rounded-2xl transition-all hover:bg-white/5 hover:-translate-y-1 cursor-pointer">
+                        <div class="aspect-video bg-indigo-900/30 rounded-xl mb-4 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&q=80&w=600" alt="Music" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-space-blue to-transparent"></div>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-tighter text-tech-purple font-bold">音乐曲目</span>
+                        <h4 class="text-lg font-bold mb-2">Moonlight Sonata</h4>
+                        <p class="text-xs text-slate-400 line-clamp-2">贝多芬的月光奏鸣曲，在这寂静时刻，是脑海里最完美的背景乐。</p>
+                    </div>
+                    <!-- Rec 3 -->
+                    <div class="group glass-card p-6 rounded-2xl transition-all hover:bg-white/5 hover:-translate-y-1 cursor-pointer">
+                        <div class="aspect-video bg-indigo-900/30 rounded-xl mb-4 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600" alt="Books" class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-space-blue to-transparent"></div>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-tighter text-tech-purple font-bold">文学著作</span>
+                        <h4 class="text-lg font-bold mb-2">《尤利西斯》</h4>
+                        <p class="text-xs text-slate-400 line-clamp-2">意识流的巅峰之作，正如你跳跃而深刻的思维，难以被定义。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-slate-500 text-sm flex items-center gap-6">
+            <span class="flex items-center gap-2"><i data-lucide="fingerprint" class="w-4 h-4"></i> 灵魂特征唯一加密标识: 0x7E...42C</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-800"></span>
+            <span>生成于 2023.10.27 深空节点</span>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Particle System Animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.glow = Math.random() > 0.9;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.glow 
+                    ? `rgba(251, 191, 36, ${this.opacity})` 
+                    : `rgba(255, 255, 255, ${this.opacity})`;
+                
+                if (this.glow) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#fbbf24';
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.floor((canvas.width * canvas.height) / 10000);
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Lifecycle Management
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        resizeCanvas();
+        initParticles();
+        animate();
+
+        // Cleanup function if needed (e.g., in a framework)
+        window.addEventListener('unload', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+        });
+    </script>
+</body>
+</html>

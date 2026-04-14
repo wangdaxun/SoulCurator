@@ -1,0 +1,78 @@
+package com.soulcurator.backend.repository;
+
+import com.soulcurator.backend.model.entity.TagEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface TagRepository extends JpaRepository<TagEntity, Long> {
+    
+    Optional<TagEntity> findByName(String name);
+    
+    List<TagEntity> findByCategory(TagEntity.TagCategory category);
+    
+    Page<TagEntity> findByCategory(TagEntity.TagCategory category, Pageable pageable);
+    
+    List<TagEntity> findByNameContainingIgnoreCase(String name);
+    
+    List<TagEntity> findByParentId(Long parentId);
+    
+    List<TagEntity> findByAiGenerated(Boolean aiGenerated);
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.category = 'EMOTION' AND t.usageCount > 0 ORDER BY t.usageCount DESC")
+    List<TagEntity> findPopularEmotions(Pageable pageable);
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.category = 'THEME' AND t.usageCount > 0 ORDER BY t.usageCount DESC")
+    List<TagEntity> findPopularThemes(Pageable pageable);
+    
+    // @Query("SELECT t FROM TagEntity t WHERE t.id IN (SELECT t2.id FROM WorkEntity w JOIN w.themes t2 WHERE w.id = :workId)")
+    // List<TagEntity> findThemesByWorkId(@Param("workId") Long workId);
+    
+    // @Query("SELECT t FROM TagEntity t WHERE t.id IN (SELECT t2.id FROM WorkEntity w JOIN w.emotions t2 WHERE w.id = :workId)")
+    // List<TagEntity> findEmotionsByWorkId(@Param("workId") Long workId);
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.id IN (SELECT upe.tag.id FROM UserEntity u JOIN u.preferredEmotions upe WHERE u.id = :userId)")
+    List<TagEntity> findUserPreferredEmotions(@Param("userId") Long userId);
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.id IN (SELECT upt.tag.id FROM UserEntity u JOIN u.preferredThemes upt WHERE u.id = :userId)")
+    List<TagEntity> findUserPreferredThemes(@Param("userId") Long userId);
+    
+    // @Query("SELECT t, COUNT(w) as usageCount FROM TagEntity t " +
+    //        "LEFT JOIN WorkEntity w ON t MEMBER OF w.themes " +
+    //        "WHERE t.category = 'THEME' " +
+    //        "GROUP BY t " +
+    //        "ORDER BY usageCount DESC")
+    // List<Object[]> findThemeUsageStats(Pageable pageable);
+    
+    // @Query("SELECT t, COUNT(w) as usageCount FROM TagEntity t " +
+    //        "LEFT JOIN WorkEntity w ON t MEMBER OF w.emotions " +
+    //        "WHERE t.category = 'EMOTION' " +
+    //        "GROUP BY t " +
+    //        "ORDER BY usageCount DESC")
+    // List<Object[]> findEmotionUsageStats(Pageable pageable);
+    
+    @Query(value = "SELECT t1.id as tag1_id, t2.id as tag2_id, COUNT(*) as cooccurrence " +
+                   "FROM work_themes wt1 " +
+                   "JOIN work_themes wt2 ON wt1.work_id = wt2.work_id AND wt1.theme_id < wt2.theme_id " +
+                   "JOIN tags t1 ON wt1.theme_id = t1.id " +
+                   "JOIN tags t2 ON wt2.theme_id = t2.id " +
+                   "WHERE t1.category = 'THEME' AND t2.category = 'THEME' " +
+                   "GROUP BY t1.id, t2.id " +
+                   "ORDER BY cooccurrence DESC " +
+                   "LIMIT :limit",
+           nativeQuery = true)
+    List<Object[]> findThemeCooccurrence(@Param("limit") int limit);
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.emotionType IS NOT NULL")
+    List<TagEntity> findEmotionTypedTags();
+    
+    @Query("SELECT t FROM TagEntity t WHERE t.themeType IS NOT NULL")
+    List<TagEntity> findThemeTypedTags();
+}

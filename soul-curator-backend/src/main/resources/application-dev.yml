@@ -1,0 +1,20 @@
+# 开发环境配置
+spring:
+  jpa:
+    show-sql: true
+  
+  web:
+    cors:
+      allowed-origins: "http://localhost:3000,http://localhost:5173"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+  
+  # 禁用Spring Security（开发环境）
+  security:
+    basic:
+      enabled: false
+
+logging:
+  level:
+    com.soulcurator.backend: TRACE
