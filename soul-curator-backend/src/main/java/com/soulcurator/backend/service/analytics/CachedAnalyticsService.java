@@ -191,9 +191,11 @@ public class CachedAnalyticsService implements AnalyticsService {
     /**
      * 清除特定会话的缓存
      */
-    @CacheEvict(value = "userSessions", key = "'session:' + #sessionId")
-    @CacheEvict(value = "userSessions", key = "'sequence:' + #sessionId")
-    @CacheEvict(value = "userSessions", key = "'completed:' + #sessionId")
+    @Caching(evict = {
+        @CacheEvict(value = "userSessions", key = "'session:' + #sessionId"),
+        @CacheEvict(value = "userSessions", key = "'sequence:' + #sessionId"),
+        @CacheEvict(value = "userSessions", key = "'completed:' + #sessionId")
+    })
     public void clearSessionCache(String sessionId) {
         log.debug("清除会话缓存: sessionId={}", sessionId);
         // 这个方法通过@CacheEvict注解自动清除特定会话的缓存
@@ -202,7 +204,9 @@ public class CachedAnalyticsService implements AnalyticsService {
     /**
      * 清除特定用户的缓存
      */
-    @CacheEvict(value = "userSessions", key = "'user:' + #userId")
+    @Caching(evict = {
+        @CacheEvict(value = "userSessions", key = "'user:' + #userId")
+    })
     public void clearUserCache(Long userId) {
         log.debug("清除用户缓存: userId={}", userId);
         // 这个方法通过@CacheEvict注解自动清除特定用户的缓存
