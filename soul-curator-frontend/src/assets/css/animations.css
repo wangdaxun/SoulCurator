@@ -1,0 +1,139 @@
+/* 自定义动画 - 用于SoulCurator项目 */
+
+/* 浮动动画 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 脉动发光动画 */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 玻璃碎裂动画 */
+@keyframes glass-shatter {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05) rotate(5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) rotate(-5deg);
+  }
+}
+
+.animate-glass-shatter {
+  animation: glass-shatter 0.8s ease-out forwards;
+}
+
+/* 灵魂脉动动画 */
+@keyframes soul-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.animate-soul-pulse {
+  animation: soul-pulse 3s ease-in-out infinite;
+}
+
+/* 进度条连接线动画 */
+@keyframes progress-line {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-progress-line {
+  background: linear-gradient(90deg, 
+    rgba(147, 51, 234, 0.3) 0%, 
+    rgba(147, 51, 234, 0.6) 50%, 
+    rgba(147, 51, 234, 0.3) 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-line 3s ease-in-out infinite;
+}
+
+/* 选项卡片悬停动画 */
+@keyframes option-hover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-option-hover {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animate-option-hover:hover {
+  animation: option-hover 0.3s ease-out forwards;
+}
+
+/* 响应式动画调整 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-soul-pulse,
+  .animate-progress-line {
+    animation: none;
+  }
+  
+  .animate-option-hover:hover {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* 暗黑主题动画 */
+.dark .animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 打印时隐藏动画 */
+@media print {
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-glass-shatter,
+  .animate-soul-pulse,
+  .animate-progress-line {
+    animation: none !important;
+  }
+}
