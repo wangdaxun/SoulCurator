@@ -108,10 +108,10 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     boolean isSessionCompleted(@Param("sessionId") String sessionId);
     
     /**
-     * 获取会话的平均完成时间
+     * 获取会话的平均完成时间（秒）
      */
     @Query("""
-        SELECT AVG(EXTRACT(EPOCH FROM (portrait.createdAt - firstPage.createdAt))) 
+        SELECT AVG(EXTRACT(EPOCH FROM portrait.createdAt) - EXTRACT(EPOCH FROM firstPage.createdAt))
         FROM UserEvent portrait
         JOIN UserEvent firstPage ON portrait.sessionId = firstPage.sessionId
         WHERE portrait.eventType = 'portrait_generated'
@@ -120,6 +120,6 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
         AND portrait.createdAt BETWEEN :start AND :end
         AND firstPage.createdAt BETWEEN :start AND :end
     """)
-    Double getAverageCompletionTime(@Param("start") LocalDateTime start, 
+    Double getAverageCompletionTime(@Param("start") LocalDateTime start,
                                     @Param("end") LocalDateTime end);
 }

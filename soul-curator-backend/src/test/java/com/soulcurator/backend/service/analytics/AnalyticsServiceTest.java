@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -172,7 +173,7 @@ class AnalyticsServiceTest {
     void testGetEventsBySessionId() {
         // 模拟Repository行为
         when(userEventRepository.findBySessionId("test-session-123"))
-                .thenReturn(java.util.List.of(mockUserEvent));
+                .thenReturn(Arrays.asList(mockUserEvent));
         
         // 执行测试
         var events = analyticsService.getEventsBySessionId("test-session-123");
@@ -247,9 +248,9 @@ class AnalyticsServiceTest {
     void testGetServiceStats() {
         // 模拟Repository行为
         when(userEventRepository.count()).thenReturn(1000L);
-        when(userEventRepository.findAll()).thenReturn(java.util.List.of(mockUserEvent));
+        when(userEventRepository.findAll()).thenReturn(Arrays.asList(mockUserEvent));
         when(userEventRepository.countByEventTypeGroup(any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(java.util.List.of(new Object[]{"selection", 500L}));
+                .thenReturn(Arrays.asList(new Object[]{"selection", 500L}));
         
         // 执行测试
         var stats = analyticsService.getServiceStats();
@@ -311,7 +312,7 @@ class AnalyticsServiceTest {
         when(userEventRepository.save(any(UserEvent.class))).thenReturn(mockUserEvent);
         
         // 执行测试
-        var responses = analyticsService.recordEvents(java.util.List.of(request1, request2));
+        var responses = analyticsService.recordEvents(Arrays.asList(request1, request2));
         
         // 验证结果
         assertNotNull(responses);

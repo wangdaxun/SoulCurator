@@ -123,7 +123,7 @@ public class Question {
     public int getAvailableOptionsCount() {
         if (options == null) return 0;
         return (int) options.stream()
-                .filter(Option::getIsActive)
+                .filter(opt -> Boolean.TRUE.equals(opt.getIsActive()))
                 .count();
     }
     
@@ -150,7 +150,7 @@ public class Question {
     public List<Option> getActiveOptions() {
         if (options == null) return new ArrayList<>();
         return options.stream()
-                .filter(Option::getIsActive)
+                .filter(opt -> Boolean.TRUE.equals(opt.getIsActive()))
                 .toList();
     }
     

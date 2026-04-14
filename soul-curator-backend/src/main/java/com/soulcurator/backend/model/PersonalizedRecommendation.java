@@ -51,7 +51,7 @@ public class PersonalizedRecommendation {
     /**
      * 匹配度分数（0-100）
      */
-    @Column(name = "match_score", precision = 5, scale = 2)
+    @Column(name = "match_score")
     private Double matchScore;
     
     /**
