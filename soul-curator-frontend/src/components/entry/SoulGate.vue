@@ -66,7 +66,7 @@ const glowColor = computed(() => {
     gold: '#ca8a04',
     green: '#16a34a',
   }
-  return colorMap[props.color] || '#ffffff'
+  return colorMap[props.color] || props.color || '#ffffff'
 })
 
 const handleClick = () => {

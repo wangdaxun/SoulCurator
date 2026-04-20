@@ -9,17 +9,17 @@ import { post, get } from './request'
 let sessionId = null
 
 /**
- * 生成或获取会话ID
+ * 获取会话ID
+ * 注意：不再自己生成sessionId，必须通过后端创建
  */
-export function getOrCreateSessionId() {
+export function getSessionId() {
   if (!sessionId) {
-    // 尝试从localStorage获取
+    // 从localStorage获取
     sessionId = localStorage.getItem('soulcurator_session_id')
     
-    // 如果没有，生成新的会话ID
     if (!sessionId) {
-      sessionId = generateSessionId()
-      localStorage.setItem('soulcurator_session_id', sessionId)
+      console.warn('没有找到有效的会话ID，请先创建会话')
+      return null
     }
   }
   
@@ -27,10 +27,19 @@ export function getOrCreateSessionId() {
 }
 
 /**
- * 生成会话ID
+ * 设置会话ID（由外部传入）
  */
-function generateSessionId() {
-  return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+export function setSessionId(newSessionId) {
+  sessionId = newSessionId
+  localStorage.setItem('soulcurator_session_id', newSessionId)
+}
+
+/**
+ * 清除会话ID
+ */
+export function clearSessionId() {
+  sessionId = null
+  localStorage.removeItem('soulcurator_session_id')
 }
 
 /**
@@ -51,7 +60,12 @@ export function recordEvent({
   pageTitle = document.title,
 }) {
   // 确保有会话ID
-  const sessionId = getOrCreateSessionId()
+  const sessionId = getSessionId()
+  
+  if (!sessionId) {
+    console.warn('无法记录事件：缺少会话ID')
+    return Promise.reject(new Error('缺少会话ID，请先创建会话'))
+  }
   
   // 构建完整的事件数据
   const fullEventData = {
@@ -200,7 +214,7 @@ export function checkHealth() {
   return get('/v1/analytics/health')
     .then(response => {
       console.debug('分析服务健康状态:', response)
-      return response === 'Analytics API is healthy'
+      return response.status === 'healthy'
     })
     .catch(error => {
       console.warn('分析服务健康检查失败:', error)
@@ -301,7 +315,9 @@ if (typeof window !== 'undefined') {
 }
 
 export default {
-  getOrCreateSessionId,
+  getSessionId,
+  setSessionId,
+  clearSessionId,
   recordEvent,
   recordPageView,
   recordClick,

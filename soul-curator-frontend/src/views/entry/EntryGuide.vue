@@ -33,13 +33,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import ParticleBackground from '@/components/entry/ParticleBackground.vue'
 import SoulGate from '@/components/entry/SoulGate.vue'
 import CurtainTransition from '@/components/entry/CurtainTransition.vue'
 import { useQuizStore } from '@/stores/quiz'
 import { EMOTION_QUESTIONS } from '@/data/questions'
+import { useAnalytics } from '@/composables/useAnalytics'
+import { getAllSoulGateways, getSoulExpByGatewayType } from '@/api/entry/guide'
+import { getOrCreateSession } from '@/api/session'
+
+const analytics = useAnalytics()
 
 const quizStore = useQuizStore()
 const router = useRouter()
@@ -48,51 +53,57 @@ const showCurtain = ref(false)
 const isTransitioning = ref(false)
 
 // 门数据配置
-const gates = ref([
-  {
-    type: 'movie',
-    color: 'purple',
-    icon: 'clapperboard',
-    title: '电影之门',
-    description: '在光影编织的梦境里\n寻找另一个自己',
-  },
-  {
-    type: 'literature',
-    color: 'blue',
-    icon: 'book-open',
-    title: '文学之门',
-    description: '于纸墨留存的呼吸间\n触碰永恒的真理',
-  },
-  {
-    type: 'music',
-    color: 'gold',
-    icon: 'music',
-    title: '音乐之门',
-    description: '由旋律激起的共振中\n释放压抑的灵魂',
-  },
-  {
-    type: 'game',
-    color: 'green',
-    icon: 'gamepad-2',
-    title: '游戏之门',
-    description: '在维度交错的交互里\n重塑世界的法则',
-  },
-])
+const gates = ref([])
+
+onMounted(async () => {
+  // 记录灵魂之门浏览事件
+  analytics.recordPageView('EntryGuide')
+  try {
+    const response = await getAllSoulGateways()
+    if (response.success) {
+      gates.value = response.data
+    } else {
+      console.error('获取灵魂之门数据失败:', response.message)
+    }
+  } catch (error) {
+    console.error('请求灵魂之门数据出错:', error)
+  }
+})
 
 // 处理门的选择/取消
-const handleGateClick = (type) => {
+const handleGateClick = async (type) => {
   console.log('点击了门:', type)
 
   // 如果已经在过渡中，不重复触发
   if (isTransitioning.value) return
 
-  // 设置选中的门类型
-  quizStore.setSelectedType(selectedType.value === type ? null : type)
-  // TODO.. 调用获取问题接口来自后端获取问题
-  quizStore.setQuestions(EMOTION_QUESTIONS)
-  // 开始过渡动画
-  isTransitioning.value = true
-  showCurtain.value = true
+  try {
+    // 1. 创建或获取会话
+    const sessionId = await getOrCreateSession(type)
+    
+    // 2. 保存会话ID到store
+    quizStore.setSessionId(sessionId)
+    
+    // 3. 设置选中的门类型
+    quizStore.setSelectedType(type)
+    
+    // 4. 获取问题列表
+    const response = await getSoulExpByGatewayType(type) 
+    console.log('获取问题接口响应:', response)
+    if (response.success) {
+      quizStore.setQuestions(response.data?.questions || [])
+    } else {
+      console.error('获取问题数据失败:', response.message)
+    }
+    
+    // 5. 开始过渡动画
+    isTransitioning.value = true
+    showCurtain.value = true
+    
+  } catch (error) {
+    console.error('创建会话失败:', error)
+    // 可以在这里添加错误处理，如显示提示信息
+  }
 }
 
 // 帷幕动画完成回调

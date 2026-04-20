@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 
 export const useQuizStore = defineStore('quiz', () => {
   // 状态
+  const sessionId = ref(null) // 新增：会话ID
   const selectedType = ref(null) // 'movie' | 'literature' | 'music' | 'game'
   const currentQuestionIndex = ref(0)
   const answers = ref([]) // 用户的答案列表
@@ -24,6 +25,10 @@ export const useQuizStore = defineStore('quiz', () => {
   })
 
   // 方法
+  function setSessionId(id) {
+    sessionId.value = id
+  }
+
   function setSelectedType(type) {
     selectedType.value = type
   }
@@ -49,6 +54,7 @@ export const useQuizStore = defineStore('quiz', () => {
   }
 
   function reset() {
+    sessionId.value = null
     selectedType.value = null
     currentQuestionIndex.value = 0
     answers.value = []
@@ -62,6 +68,7 @@ export const useQuizStore = defineStore('quiz', () => {
 
   return {
     // 状态
+    sessionId,
     selectedType,
     currentQuestionIndex,
     answers,
@@ -72,6 +79,7 @@ export const useQuizStore = defineStore('quiz', () => {
     currentQuestion,
     isCompleted,
     // 方法
+    setSessionId,
     setSelectedType,
     setQuestions,
     answerQuestion,

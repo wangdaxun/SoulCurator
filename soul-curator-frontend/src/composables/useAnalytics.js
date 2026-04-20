@@ -1,145 +1,107 @@
-import { ref, onMounted, onUnmounted } from 'vue'
-import * as analytics from '../api/analytics'
+import { useAnalyticsStore } from '../stores/analytics.store'
 
 /**
  * Vue3组合式API：分析服务
  * 在组件中方便地使用分析功能
+ * 
+ * 注意：现在使用 Pinia store 管理状态，状态在应用级别持久化
  */
 
 export function useAnalytics() {
-  const isAnalyticsReady = ref(false)
-  const sessionId = ref(null)
+  const analyticsStore = useAnalyticsStore()
   
   /**
    * 初始化分析服务
+   * 注意：现在只需要调用一次，状态会在整个应用中保持
    */
   const init = async () => {
-    try {
-      // 获取会话ID
-      sessionId.value = analytics.getOrCreateSessionId()
-      
-      // 初始化分析服务
-      const isHealthy = await analytics.initAnalytics()
-      isAnalyticsReady.value = isHealthy
-      
-      console.log('分析服务初始化完成:', isHealthy ? '正常' : '异常')
-      return isHealthy
-    } catch (error) {
-      console.warn('分析服务初始化失败:', error)
-      isAnalyticsReady.value = false
-      return false
-    }
+    return analyticsStore.init()
   }
   
   /**
    * 记录事件（通用方法）
    */
   const recordEvent = (eventData) => {
-    if (!isAnalyticsReady.value) {
-      console.warn('分析服务未就绪，跳过事件记录:', eventData.eventType)
-      return Promise.resolve()
-    }
-    
-    return analytics.recordEvent(eventData)
+    return analyticsStore.recordEvent(eventData)
   }
   
   /**
    * 记录页面浏览
    */
   const recordPageView = (pageName, extraData = {}) => {
-    return recordEvent({
-      eventType: 'page_view',
-      eventName: `${pageName}_entered`,
-      eventData: extraData,
-    })
+    return analyticsStore.recordPageView(pageName, extraData)
   }
   
   /**
    * 记录点击事件
    */
   const recordClick = (elementName, extraData = {}) => {
-    return recordEvent({
-      eventType: 'click',
-      eventName: `${elementName}_clicked`,
-      eventData: extraData,
-    })
+    return analyticsStore.recordClick(elementName, extraData)
   }
   
   /**
    * 记录选择事件（灵魂探索）
    */
   const recordSelection = (questionId, optionId, optionText, dimension, weight) => {
-    return recordEvent({
-      eventType: 'selection',
-      eventName: 'option_selected',
-      eventData: {
-        questionId,
-        optionId,
-        optionText,
-        dimension,
-        weight,
-      },
-    })
+    return analyticsStore.recordSelection(questionId, optionId, optionText, dimension, weight)
   }
   
   /**
    * 记录画像生成
    */
   const recordPortraitGenerated = (portraitId, dimensionScores, summary) => {
-    return recordEvent({
-      eventType: 'portrait_generated',
-      eventName: 'soul_portrait_created',
-      eventData: {
-        portraitId,
-        dimensionScores,
-        summary,
-      },
-    })
+    return analyticsStore.recordPortraitGenerated(portraitId, dimensionScores, summary)
   }
   
   /**
    * 记录错误事件
    */
   const recordError = (errorType, errorMessage, extraData = {}) => {
-    return recordEvent({
-      eventType: 'error',
-      eventName: `${errorType}_error`,
-      eventData: {
-        errorMessage,
-        ...extraData,
-      },
-    })
+    return analyticsStore.recordError(errorType, errorMessage, extraData)
   }
   
   /**
    * 检查服务状态
    */
   const checkHealth = () => {
-    return analytics.checkHealth()
+    return analyticsStore.checkHealth()
   }
   
   /**
    * 获取会话ID
    */
   const getSessionId = () => {
-    return sessionId.value
+    return analyticsStore.getSessionId()
   }
   
-  // 组件挂载时自动初始化
-  onMounted(() => {
-    init()
-  })
+  /**
+   * 启用/禁用分析服务
+   */
+  const setEnabled = (enabled) => {
+    analyticsStore.setEnabled(enabled)
+  }
   
-  // 组件卸载时结束会话
-  onUnmounted(() => {
-    // 注意：这里不调用endSession，因为endSession应该在页面级别调用
-    // 组件级别的卸载不需要结束整个会话
-  })
+  /**
+   * 获取分析服务状态
+   */
+  const getStatus = () => {
+    return {
+      isReady: analyticsStore.isAnalyticsReady,
+      isEnabled: analyticsStore.isEnabled,
+      sessionId: analyticsStore.sessionId,
+      healthStatus: analyticsStore.healthStatus,
+      successRate: analyticsStore.successRate,
+      eventsRecorded: analyticsStore.eventsRecorded,
+      eventsFailed: analyticsStore.eventsFailed,
+      hasPendingEvents: analyticsStore.hasPendingEvents,
+    }
+  }
   
   return {
-    // 状态
-    isAnalyticsReady,
-    sessionId,
+    // 状态（从store中获取）
+    isAnalyticsReady: analyticsStore.isAnalyticsReady,
+    sessionId: analyticsStore.sessionId,
+    isEnabled: analyticsStore.isEnabled,
     
     // 方法
     init,
@@ -151,18 +113,23 @@ export function useAnalytics() {
     recordError,
     checkHealth,
     getSessionId,
+    setEnabled,
+    getStatus,
   }
 }
 
 /**
  * 页面浏览跟踪器
  * 自动跟踪路由变化
+ * 现在使用 Pinia store 管理状态
  */
 export function usePageTracker(router) {
+  const analyticsStore = useAnalyticsStore()
+  
   const trackPageView = (to, from) => {
     const pageName = to.name || to.path.replace('/', '').replace(/\//g, '_') || 'unknown'
     
-    analytics.recordPageView(pageName, {
+    analyticsStore.recordPageView(pageName, {
       from: from?.path || 'direct',
       to: to.path,
       params: to.params,
@@ -192,8 +159,10 @@ export function usePageTracker(router) {
  * 自动跟踪按钮点击
  */
 export function useClickTracker() {
+  const analyticsStore = useAnalyticsStore()
+  
   const trackClick = (elementName, extraData = {}) => {
-    analytics.recordClick(elementName, extraData).catch(() => {
+    analyticsStore.recordClick(elementName, extraData).catch(() => {
       // 静默失败
     })
   }
@@ -224,6 +193,8 @@ export function useClickTracker() {
  * 自动跟踪JavaScript错误
  */
 export function useErrorTracker() {
+  const analyticsStore = useAnalyticsStore()
+  
   const trackError = (error, errorInfo = {}) => {
     const errorData = {
       message: error.message || String(error),
@@ -231,13 +202,10 @@ export function useErrorTracker() {
       ...errorInfo,
     }
     
-    analytics.recordEvent({
-      eventType: 'error',
-      eventName: 'javascript_error',
-      eventData: errorData,
-    }).catch(() => {
-      // 静默失败
-    })
+    analyticsStore.recordError('javascript', error.message || 'Unknown error', errorData)
+      .catch(() => {
+        // 静默失败
+      })
   }
   
   // 监听全局错误
@@ -293,9 +261,36 @@ export function useErrorTracker() {
   }
 }
 
+/**
+ * 在应用启动时设置分析服务
+ * 建议在 main.js 中调用
+ */
+export function setupAnalytics(app, router) {
+  const analyticsStore = useAnalyticsStore()
+  
+  // 设置错误跟踪
+  const errorTracker = useErrorTracker()
+  errorTracker.setupVueErrorHandler(app)
+  
+  // 设置页面跟踪
+  if (router) {
+    usePageTracker(router)
+  }
+  
+  // 自动初始化分析服务
+  if (analyticsStore.isEnabled) {
+    analyticsStore.init().catch(error => {
+      console.warn('自动初始化分析服务失败:', error)
+    })
+  }
+  
+  return analyticsStore
+}
+
 export default {
   useAnalytics,
   usePageTracker,
   useClickTracker,
   useErrorTracker,
+  setupAnalytics,
 }

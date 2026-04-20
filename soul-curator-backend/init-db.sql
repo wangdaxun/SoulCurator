@@ -48,8 +48,15 @@ CREATE TABLE questions (
     subtitle VARCHAR(500),                   -- 问题副标题
     description TEXT,                        -- 问题详细描述
     
+    -- 灵魂之门关联
+    gateway_type VARCHAR(20) NOT NULL DEFAULT 'movie',  -- 关联的灵魂之门入口类型
+    
     -- 维度映射（每个问题对应哪些灵魂维度）
     dimension_mapping JSONB,                 -- JSON格式：{"visual": 2, "rational": 1, ...}
+    
+    -- AI扩展字段
+    dimension_id UUID,                       -- 关联灵魂维度，用于AI生成个性化问题
+    ai_prompt TEXT,                          -- AI生成提示词，用于指导AI生成问题内容
     
     -- 元数据
     is_active BOOLEAN DEFAULT TRUE,          -- 是否启用
@@ -60,11 +67,12 @@ CREATE TABLE questions (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
     -- 约束
-    UNIQUE(step_number),
+    UNIQUE(step_number, gateway_type),      -- 同一入口类型下步骤编号唯一
     CHECK (step_number BETWEEN 1 AND 20),    -- 预留扩展空间
     
     -- 索引
     INDEX idx_questions_step (step_number),
+    INDEX idx_questions_gateway (gateway_type),
     INDEX idx_questions_active (is_active)
 );
 
@@ -85,6 +93,11 @@ CREATE TABLE options (
     
     -- 维度得分（选择此选项对各个维度的贡献）
     dimension_scores JSONB NOT NULL,         -- JSON格式：{"visual": 3, "rational": 2, ...}
+    
+    -- AI扩展字段
+    weight JSONB,                            -- 权重配置，用于分支计算和AI路径选择
+    next_question_id BIGINT,                 -- 固定流程的下一个问题，支持线性流程控制
+    ai_context TEXT,                         -- AI生成上下文，提供选项生成的背景信息
     
     -- 元数据
     display_order INTEGER DEFAULT 0,         -- 显示顺序
@@ -129,6 +142,7 @@ CREATE TABLE user_selections (
     -- 关联信息
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     session_id VARCHAR(64) NOT NULL,         -- 冗余存储，便于查询
+    gateway_type VARCHAR(20) NOT NULL,       -- 灵魂之门入口类型
     
     -- 选择信息
     question_id BIGINT NOT NULL REFERENCES questions(id),
@@ -137,6 +151,9 @@ CREATE TABLE user_selections (
     -- 选择上下文
     step_number INTEGER NOT NULL,            -- 步骤编号
     time_spent_seconds INTEGER,              -- 花费时间（秒）
+    
+    -- AI扩展字段
+    metadata JSONB,                          -- 扩展字段，存储用户选择的额外信息
     
     -- 时间戳
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -147,6 +164,7 @@ CREATE TABLE user_selections (
     -- 索引
     INDEX idx_selections_user (user_id),
     INDEX idx_selections_session (session_id),
+    INDEX idx_selections_gateway (gateway_type),
     INDEX idx_selections_created (created_at)
 );
 

@@ -69,14 +69,23 @@
   </div>
 </template>
 <script setup>
+import { onMounted } from 'vue'
 import { useQuizStore } from '@/stores/quiz'
 import ParticleBackground from '@/components/entry/ParticleBackground.vue'
 import SoulPortraitHeader from '@/components/entry/SoulPortraitHeader.vue'
 import QuoteCard from '@/components/shared/QuoteCard.vue'
 import RecommendationsGrid from '@/components/shared/RecommendationsGrid.vue'
 import Icon from "@/components/shared/Icon.vue"
+import { useAnalytics } from '@/composables/useAnalytics'
+
+const analytics = useAnalytics()
 const quizStore = useQuizStore()
 const { result: portraitData } = quizStore
+
+onMounted(() => {
+  // 记录进入画像页事件
+  analytics.recordPageView('SoulPortrait')
+})
 // 事件处理方法
 const handleRefreshRecommendations = () => {
   console.log('刷新推荐')

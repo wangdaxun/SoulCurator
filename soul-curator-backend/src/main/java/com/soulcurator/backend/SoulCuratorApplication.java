@@ -7,5 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SoulCuratorApplication {
     public static void main(String[] args) {
         SpringApplication.run(SoulCuratorApplication.class, args);
+        System.out.println("🎭 SoulCurator后端启动成功！");
     }
 }

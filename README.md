@@ -96,6 +96,7 @@ soulcurator/
 - Python 3.11+ (AI引擎开发)
 
 ### 一键启动开发环境
+
 ```bash
 # 克隆项目
 git clone https://github.com/yourusername/soulcurator.git
@@ -105,7 +106,7 @@ cd soulcurator
 docker-compose up -d
 
 # 访问服务
-# 前端: http://localhost:3000
+# 前端: http://localhost:5173
 # 后端API: http://localhost:8080
 # API文档: http://localhost:8080/swagger-ui.html
 # AI引擎API: http://localhost:8000/docs

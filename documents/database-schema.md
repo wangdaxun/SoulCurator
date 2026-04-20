@@ -2,8 +2,53 @@
 
 ## 数据库概览
 - **数据库名称**: soulcurator_db
-- **表数量**: 11张表
-- **设计模式**: 星型架构 + 维度建模
+- **表数量**: 13张表（包含新增的analyses表和soul_gateways表）
+- **设计模式**: 星型架构 + 维
+
+## 新增表：灵魂之门入口表 (soul_gateways)
+
+为了支持方案B（后端统一维护入口配置），新增soul_gateways表：
+
+```sql
+soul_gateways {
+    VARCHAR(50) id PK                    -- 入口类型ID，如'movie', 'literature'
+    VARCHAR(100) name                    -- 入口名称，如'电影之门'
+    TEXT description                     -- 入口描述
+    VARCHAR(7) color_hex                -- 颜色代码，如'#8B5CF6'
+    VARCHAR(50) icon                    -- 图标名称，如'clapperboard'
+    VARCHAR(50) gateway_type            -- 入口类型：movie/literature/music/game
+    VARCHAR(50) category                -- 分类：art/entertainment/knowledge
+    INTEGER display_order               -- 显示顺序
+    BOOLEAN is_active                   -- 是否启用
+    INTEGER popularity_score            -- 热度评分
+    DECIMAL(5,2) completion_rate        -- 完成率
+    TEXT ai_prompt                      -- AI生成提示词
+    JSONB target_dimensions             -- 目标维度
+    TIMESTAMPTZ created_at
+    TIMESTAMPTZ updated_at
+}
+```
+
+### questions表新增字段
+- **gateway_type (VARCHAR(50))**: 关联的灵魂之门入口类型
+
+## AI能力扩展字段说明
+
+为了支持未来的AI能力扩展，以下表添加了预留字段：
+
+### 1. questions表新增字段
+- **dimension_id (UUID)**: 关联灵魂维度，用于AI生成个性化问题
+- **ai_prompt (TEXT)**: AI生成提示词，用于指导AI生成问题内容
+
+### 2. options表新增字段
+- **weight (JSONB)**: 权重配置，用于分支计算和AI路径选择
+- **next_question_id (UUID)**: 固定流程的下一个问题，支持线性流程控制
+- **ai_context (TEXT)**: AI生成上下文，提供选项生成的背景信息
+
+### 3. user_selections表新增字段
+- **metadata (JSONB)**: 扩展字段，存储用户选择的额外信息，如AI分析结果、情感数据等
+
+这些字段为后续的AI集成、个性化路径计算、动态问题生成等功能提供数据支持。度建模
 - **更新日期**: 2026-04-13
 
 ## 表关系图
@@ -32,6 +77,8 @@ erDiagram
         JSONB dimension_mapping
         BOOLEAN is_active
         INTEGER display_order
+        UUID dimension_id  -- 新增：关联灵魂维度（AI扩展）
+        TEXT ai_prompt     -- 新增：AI生成提示词（AI扩展）
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -45,6 +92,9 @@ erDiagram
         TEXT[] work_references
         JSONB dimension_scores
         INTEGER display_order
+        JSONB weight           -- 新增：权重配置，用于分支计算（AI扩展）
+        UUID next_question_id  -- 新增：固定流程的下一个问题（AI扩展）
+        TEXT ai_context        -- 新增：AI生成上下文（AI扩展）
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -57,6 +107,7 @@ erDiagram
         VARCHAR(50) option_id FK
         INTEGER step_number
         INTEGER time_spent_seconds
+        JSONB metadata         -- 新增：扩展字段（AI扩展）
         TIMESTAMPTZ created_at
     }
     
@@ -517,3 +568,4 @@ soul_dimensions soul_dimensions soul_dimensions soul_dimensions
 **最后更新**: 2026-04-13  
 **维护者**: 王达迅  
 **下次评审**: 2026-05-13
+
