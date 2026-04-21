@@ -59,7 +59,7 @@ public class SoulGateway {
     @Column(name = "popularity_score")
     private Integer popularityScore = 0; // 热度评分
     
-    @Column(name = "completion_rate", precision = 5, scale = 2)
+    @Column(name = "completion_rate", columnDefinition = "DECIMAL(5,2)")
     private BigDecimal completionRate; // 完成率
     
     // AI扩展字段

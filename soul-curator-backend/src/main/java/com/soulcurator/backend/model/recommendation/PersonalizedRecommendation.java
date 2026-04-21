@@ -55,7 +55,7 @@ public class PersonalizedRecommendation {
     @Column(name = "recommendation_reason", nullable = false, columnDefinition = "TEXT")
     private String recommendationReason;
     
-    @Column(name = "match_score", precision = 5, scale = 2)
+    @Column(name = "match_score", columnDefinition = "DECIMAL(5,2)")
     private BigDecimal matchScore;
     
     // 用户反馈

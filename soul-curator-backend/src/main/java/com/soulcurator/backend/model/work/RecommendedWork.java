@@ -82,6 +82,24 @@ public class RecommendedWork {
     @Column(name = "quality_score")
     private Integer qualityScore = 0;
     
+    // 扩展字段（来自extend-db-for-portrait-fixed.sql）
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "soul_types", columnDefinition = "jsonb")
+    private String soulTypes;
+    
+    @Column(name = "icon", length = 50)
+    private String icon;
+    
+    @Column(name = "color_hex", length = 7)
+    private String colorHex;
+    
+    @Column(name = "display_order")
+    private Integer displayOrder = 0;
+    
+    // AI扩展字段
+    @Column(name = "ai_context", columnDefinition = "TEXT")
+    private String aiContext;
+    
     // 时间戳
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
