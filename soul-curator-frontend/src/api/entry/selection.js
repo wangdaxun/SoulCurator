@@ -221,6 +221,18 @@ export function saveSelectionsToStorage(selections, sessionId, gatewayType) {
   }
 }
 
+export function generateSoulPortrait(sessionId, userId = null) {
+  return post('/v1/portrait/generate', { sessionId, userId })
+    .then(response => {
+      console.debug('生成画像成功:', response)
+      return response
+    })
+    .catch(error => {
+      console.warn('生成画像失败:', error)
+      return Promise.reject(error)
+    })
+}
+
 export default {
   recordSelections,
   getSelections,

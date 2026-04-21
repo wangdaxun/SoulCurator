@@ -202,7 +202,7 @@ export function useSelection() {
     }
   }
   
-  /**
+  /** 
    * 获取选择摘要
    */
   async function fetchSelectionSummary() {
@@ -343,6 +343,15 @@ export function useSelection() {
     sessionId.value = null
     gatewayType.value = null
   }
+
+  /**
+   * 生成画像
+   * @returns
+   */
+  async function generatePortrait() {
+    const response = await selectionApi.generateSoulPortrait(sessionId.value)
+    return response
+  }
   
   return {
     // 状态
@@ -369,5 +378,6 @@ export function useSelection() {
     saveToStorage,
     clearStorage,
     reset,
+    generatePortrait,
   }
 }

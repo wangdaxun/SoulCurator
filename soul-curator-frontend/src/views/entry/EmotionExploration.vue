@@ -133,10 +133,14 @@ const completeExploration = async () => {
   } catch (error) {
     console.warn('选择记录同步失败，但继续画像生成:', error)
   }
-
-  // TODO:调用生成画像的函数，传入用户的答案
-  // 这里应该调用后端的画像生成接口，而不是使用静态数据
-  setResult(SOUL_DATA) // 暂时使用静态数据
+  try {
+    const response = await selection.generatePortrait()
+    console.log('画像生成接口响应:', response)
+    setResult(response) // 使用接口返回的数据
+  } catch (error) {
+    console.error('调用画像生成接口出错:', error)
+    setResult(SOUL_DATA) // 出错时使用静态数据
+  }
   
   // 检查状态变化
   console.log('showLoading after:', showLoading.value)
